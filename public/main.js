@@ -74,7 +74,7 @@ const appendMessage = ({message, time, background, position }) => {
     div.classList.add('message', 'bg-opacity-25', 'm-2', 'px-2', 'py-1', background, position);
     div.innerHTML = `<span class="msg-text">${message}</span> <span class="msg-time">${time}</span>`;
     message.append(div);
-    message.scrollTop(0, message.scrollHeight);
+    message.scrollTo(0, message.scrollHeight);
 };
 
 socket.on('users-data', ({ users }) => {
@@ -136,4 +136,22 @@ msgForm.addEventListener('submit', (e) => {
 
     message.value = '';
     message.focus();
+});
+
+socket.on('message-to-client', ({ from, message, time }) => {
+    const receiver = title.getAttribute('userID');
+    const notify = document.getElementById(from);
+
+    if(receiver === null) {
+        notify.classList.remove('d-none');
+    } else if (receiver === from) {
+        appendMessage({
+            message,
+            time,
+            background: 'bg-secondary',
+            position: 'left'
+        });
+    } else {
+        notify.classList.remove('d-none');
+    }
 });

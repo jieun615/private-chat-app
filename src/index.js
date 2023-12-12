@@ -6,6 +6,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { default: mongoose } = require('mongoose');
 const crypto = require('crypto');
+const { saveMessages } = require('./utils/messages');
 const server = http.createServer(app);
 const io = new Server(server);
 
@@ -49,7 +50,10 @@ io.on('connection', async socket => {
     io.emit('users-data', { users });
 
     //client에서 보낸 메세지
-    socket.on('message-to-server', () => {});
+    socket.on('message-to-server', (payload) => {
+        io.to(payload.to).emit('message-to-server', payload);
+        saveMessages(payload);
+    });
 
     //database에서 메세지 가져오기
     socket.on('fetch-messages', () => {});
