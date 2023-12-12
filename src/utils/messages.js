@@ -16,6 +16,27 @@ const saveMessages = async ({from, to, message, time}) => {
     });
 };
 
+const fetchMessages = async (io, sender, receiver) => {
+    const token = getToken(sender, receiver);
+    const foundToken = await messageModel.findOne({ userToken: token });
+    if(foundToken) {
+        io.to(sender).emit('stored-messages', { messages: foundToken.messages });
+    } else {
+        const data = {
+            userToken: token,
+            messages: []
+        };
+        const message = new messageModel(data);
+        const saveMessage = message.save();
+        if(saveMessage) {
+            console.log('메세지가 생성되었습니다.');
+        } else {
+            console.log('메세지 생성 중 에러 발생');
+        }
+    };
+};
+
 module.exports = {
-    saveMessages
+    saveMessages,
+    fetchMessages
 };
