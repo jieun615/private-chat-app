@@ -67,18 +67,26 @@ const setActiveUser = (element, username, userID) => {
     socket.emit('fetch-messages', { receiver: userID });
     const notify = document.getElementById(userID);
     notify.classList.add('d-none');
-}
+};
+
+const appendMessage = ({message, time, background, position }) => {
+    let div = document.createElement('div');
+    div.classList.add('message', 'bg-opacity-25', 'm-2', 'px-2', 'py-1', background, position);
+    div.innerHTML = `<span class="msg-text">${message}</span> <span class="msg-time">${time}</span>`;
+    message.append(div);
+    message.scrollTop(0, message.scrollHeight);
+};
 
 socket.on('users-data', ({ users }) => {
     const index = users.findIndex(user => user.userID === socket.id);
     if(index > -1) {
         users.splice(index, 1);
-    }
+    };
 
     let ul = `<table class="table table-hover">`;
     for(const user of users) {
         ul += `<tr class="socket-users" onclick="setActiveUser(this, '${user.username}', '${user.userID}')"><td>${user.username}<span class="text-danger ps-1 d-none" id=${user.userID}">!</span></td></tr>`;
-    }
+    };
     ul += `</table>`;
     if(users.length > 0) {
         userTagline.innerHTML = '접속 중인 유저';
@@ -88,8 +96,8 @@ socket.on('users-data', ({ users }) => {
         userTagline.innerHTML = '접속 중인 유저 없음';
         userTagline.classList.remove('text-success');
         userTagline.classList.add('text-danger');
-    }
-})
+    };
+});
 
 const sessUsername = localStorage.getItem('session-username');
 const sessUserID = localStorage.getItem('session-userID');
@@ -100,4 +108,32 @@ if(sessUsername && sessUserID) {
     loginContainer.classList.add('d-none');
     chatBody.classList.remove('d-none');
     userTitle.innerHTML = sessUsername;
-}
+};
+
+const msgForm = document.querySelector('.msgForm');
+const message = document.getElementById('message');
+
+msgForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const to = title.getAttribute('userID');
+    const time = new Date().toLocaleString('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+    });
+
+    const payload = {
+        from: socket.id,
+        to,
+        message: message.value,
+        time
+    };
+
+    socket.emit('message-to-server', payload);
+
+    appendMessage({ ...payload, background: 'bg-success', position: 'right' });
+
+    message.value = '';
+    message.focus();
+});
