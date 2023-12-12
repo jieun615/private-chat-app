@@ -35,6 +35,8 @@ io.use((socket, next) => {
 
     socket.username = username;
     socket.id = userID;
+
+    next();
 })
 
 let users = [];
