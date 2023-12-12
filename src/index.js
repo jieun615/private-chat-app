@@ -59,7 +59,13 @@ io.on('connection', async socket => {
     socket.on('fetch-messages', () => {});
 
     //user가 방에서 나갔을 때
-    socket.on('disconnect', () => {});
+    socket.on('disconnect', () => {
+        users = users.filter(user => user.userID !== socket.id);
+
+        io.emit('users-data', { users });
+
+        io.emit('user-away', socket.id);
+    });
 });
 
 const port = process.env.SERVER_PORT;

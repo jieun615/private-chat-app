@@ -99,6 +99,15 @@ socket.on('users-data', ({ users }) => {
     };
 });
 
+socket.on('user-away', userID => {
+    const to = title.getAttribute('userID');
+    if(to === userID) {
+        title.innerHTML = '&nbsp';
+        msgDiv.classList.add('d-none');
+        message.classList.add('d-none');
+    }
+}) 
+
 const sessUsername = localStorage.getItem('session-username');
 const sessUserID = localStorage.getItem('session-userID');
 
