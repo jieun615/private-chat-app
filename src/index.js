@@ -4,11 +4,16 @@ const app = express();
 
 const http = require('http');
 const { Server } = require('socket.io');
+const { default: mongoose } = require('mongoose');
 const server = http.createServer(app);
 const io = new Server(server);
 
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.json());
+
+mongoose.connect(process.env.MOGOOSE_URI)
+    .then(() => console.log('Connected to DB'))
+    .catch(err => console.log(err))
 
 let users = [];
 io.on('connection', async socket => {
