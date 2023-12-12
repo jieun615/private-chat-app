@@ -164,3 +164,28 @@ socket.on('message-to-client', ({ from, message, time }) => {
         notify.classList.remove('d-none');
     }
 });
+
+socket.on('stored-message', ({ messages }) => {
+    if(messages.length > 0) {
+        messages.forEach(msg => {
+            const payload = {
+                message: msg.message,
+                time: msg.time
+            };
+
+            if(msg.from === socket.id) {
+                appendMessage({
+                    ...payload,
+                    background: 'bg-success',
+                    position: 'right'
+                });
+            } else {
+                appendMessage({
+                    ...payload,
+                    background: 'bg-secondary',
+                    position: 'left'
+                });
+            };
+        });
+    };
+});
