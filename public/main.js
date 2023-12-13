@@ -19,7 +19,7 @@ const loginForm = document.querySelector('.user-login');
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const username = document.getElementById('username');
-    createSession(username.ariaValueMax.toLowerCase());
+    createSession(username.value.toLowerCase());
     username.value = '';
 });
 
@@ -69,7 +69,7 @@ const setActiveUser = (element, username, userID) => {
     notify.classList.add('d-none');
 };
 
-const appendMessage = ({message, time, background, position }) => {
+const appendMessage = ({ message, time, background, position }) => {
     let div = document.createElement('div');
     div.classList.add('message', 'bg-opacity-25', 'm-2', 'px-2', 'py-1', background, position);
     div.innerHTML = `<span class="msg-text">${message}</span> <span class="msg-time">${time}</span>`;
@@ -83,12 +83,14 @@ socket.on('users-data', ({ users }) => {
         users.splice(index, 1);
     };
 
+    userTable.innerHTML = '';
     let ul = `<table class="table table-hover">`;
     for(const user of users) {
         ul += `<tr class="socket-users" onclick="setActiveUser(this, '${user.username}', '${user.userID}')"><td>${user.username}<span class="text-danger ps-1 d-none" id=${user.userID}">!</span></td></tr>`;
     };
     ul += `</table>`;
     if(users.length > 0) {
+        userTable.innerHTML = ul;
         userTagline.innerHTML = '접속 중인 유저';
         userTagline.classList.remove('text-danger');
         userTagline.classList.add('text-success');
@@ -105,8 +107,8 @@ socket.on('user-away', userID => {
         title.innerHTML = '&nbsp';
         msgDiv.classList.add('d-none');
         message.classList.add('d-none');
-    }
-}) 
+    };
+});
 
 const sessUsername = localStorage.getItem('session-username');
 const sessUserID = localStorage.getItem('session-userID');
@@ -162,7 +164,7 @@ socket.on('message-to-client', ({ from, message, time }) => {
         });
     } else {
         notify.classList.remove('d-none');
-    }
+    };
 });
 
 socket.on('stored-message', ({ messages }) => {

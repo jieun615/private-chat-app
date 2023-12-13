@@ -51,7 +51,7 @@ io.on('connection', async socket => {
 
     //client에서 보낸 메세지
     socket.on('message-to-server', (payload) => {
-        io.to(payload.to).emit('message-to-server', payload);
+        io.to(payload.to).emit('message-to-client', payload);
         saveMessages(payload);
     });
 
